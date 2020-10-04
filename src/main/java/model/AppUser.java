@@ -33,6 +33,8 @@ public class AppUser {
     @CreationTimestamp
     private Date registeredSince;
 
+    private boolean isActive;
+
     public AppUser() {
     }
 
@@ -108,6 +110,14 @@ public class AppUser {
         this.registeredSince = registeredSince;
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -132,6 +142,7 @@ public class AppUser {
                 ", following=" + following +
                 ", followedBy=" + followers +
                 ", registeredSince=" + registeredSince +
+                ", active=" + isActive +
                 '}';
     }
 
@@ -141,6 +152,7 @@ public class AppUser {
         private String login;
         private String password;
         private String email;
+        private boolean isActive;
 
         public static UserBuilder getBuilder() {
             return new UserBuilder();
@@ -173,6 +185,7 @@ public class AppUser {
             user.setName(this.name);
             user.setLastName(this.lastName);
             user.setEmail(this.email);
+            user.setActive(true);
             return user;
         }
     }
