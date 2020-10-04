@@ -12,8 +12,8 @@ public class Tweet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     //pierwwszy wyraz "Many" do nazwy klasy(wiele Tweetów), drugi do pola(jeden Autor)
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST},
-            @JoinColumn(name = "author_fk"))
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "author_fk")
     //@JoinColumn dołączany kolumne Author id
     //lepiej robić Many to One niż One to Many
     private AppUser author;
