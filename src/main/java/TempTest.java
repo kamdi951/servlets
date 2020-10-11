@@ -2,8 +2,8 @@ import dao.AppUserDao;
 import dao.TweetDao;
 import dao.impl.MySQLTweetDao;
 import dao.impl.MySQLUserDao;
-import model.AppUser;
-import model.Tweet;
+import models.AppUser;
+import models.Tweet;
 
 import java.util.List;
 
@@ -59,7 +59,7 @@ public class TempTest {
 //        System.out.println(dao.getUserByEmail("zd@gmail.com"));
 
         Tweet tweet1 = new Tweet(u1.getLogin(), "pierwszy Tweet");
-        tweetDao.saveTweet(tweet1);
+        //tweetDao.saveTweet(tweet1);
 
         System.out.println("--------------pierwszy tweet");
         List<Tweet> userTweets = tweetDao.getUserTweets(u1);

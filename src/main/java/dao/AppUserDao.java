@@ -1,9 +1,9 @@
 package dao;
 
-import model.AppUser;
+import models.AppUser;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 
 public interface AppUserDao {
 
@@ -13,11 +13,11 @@ public interface AppUserDao {
 
     void deleteUser(AppUser user);
 
-    AppUser getUserById(Long id);
+    Optional<AppUser> getUserById(Long id);
 
-    AppUser getUserByEmail(String email);
+    Optional<AppUser> getUserByEmail(String email);
 
-    AppUser getUserByLogin(String login);
+    Optional<AppUser> getUserByLogin(String login);
 
     HashSet<AppUser> getFollowedUsers(AppUser loggedUser);
 
@@ -25,9 +25,7 @@ public interface AppUserDao {
 
     HashSet<AppUser> getFollowers(AppUser loggedUser);
 
-    void follow(AppUser loggedUser, AppUser userToFollow);
+    void follow(AppUser logged, AppUser userToFollow);
 
-    void unfollow(AppUser loggedUser, AppUser userToStopFollow);
-
-
+    void unfollow(AppUser logged, AppUser userToFollow);
 }

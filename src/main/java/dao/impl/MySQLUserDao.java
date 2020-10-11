@@ -1,22 +1,20 @@
 package dao.impl;
 
+import models.AppUser;
 import dao.AbstractMySQLDao;
 import dao.AppUserDao;
-import model.AppUser;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MySQLUserDao extends AbstractMySQLDao implements AppUserDao {
-
     @Override
     public HashSet<AppUser> getAll() {
-        TypedQuery<AppUser> getall = em.createQuery("from AppUser u where u.isActive = true", AppUser.class);
-        List<AppUser> resultList = getall.getResultList();
+        TypedQuery<AppUser> getAll = em.createQuery("from AppUser u where u.isActive = true", AppUser.class);
+        List<AppUser> resultList = getAll.getResultList();
         return new HashSet<>(resultList);
     }
 
@@ -33,25 +31,36 @@ public class MySQLUserDao extends AbstractMySQLDao implements AppUserDao {
     }
 
     @Override
-    public AppUser getUserById(Long id) {
+    public Optional<AppUser> getUserById(Long id) {
         TypedQuery<AppUser> query = em.createQuery("select u from AppUser u where u.id =:id", AppUser.class);
         query.setParameter("id", id);
-        return query.getSingleResult();
+        try {
+            return Optional.ofNullable(query.getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
-
     @Override
-    public AppUser getUserByEmail(String email) {
+    public Optional<AppUser> getUserByEmail(String email) {
         TypedQuery<AppUser> query = em.createQuery("select u from AppUser u where u.email =:email", AppUser.class);
         query.setParameter("email", email);
-        return query.getSingleResult();
+        try {
+            return Optional.ofNullable(query.getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public AppUser getUserByLogin(String login) {
+    public Optional<AppUser> getUserByLogin(String login) {
         TypedQuery<AppUser> query = em.createQuery("select u from AppUser u where u.login =:login", AppUser.class);
         query.setParameter("login", login);
-        return query.getSingleResult();
+        try {
+            return Optional.ofNullable(query.getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -61,19 +70,19 @@ public class MySQLUserDao extends AbstractMySQLDao implements AppUserDao {
 
     @Override
     public HashSet<AppUser> getNotFollowedUsers(AppUser loggedUser) {
-        TypedQuery<AppUser> query = em.createQuery(
-                "select u from AppUser u where u not in :followed and u.isActive = true",AppUser.class);
-        query.setParameter("followed", new HashSet<>(loggedUser.getFollowing()));
-
-        return new HashSet<>(query.getResultList());
+        Query query = em.createQuery("select u from AppUser u where u.login != :login");
+        query.setParameter("login", loggedUser.getLogin());
+        HashSet<AppUser> appUsers = new HashSet<AppUser>(query.getResultList());
+        appUsers.removeAll(loggedUser.getFollowing());
+        return appUsers;
     }
 
     @Override
     public HashSet<AppUser> getFollowers(AppUser loggedUser) {
-        TypedQuery<AppUser> query = em.createQuery("select followers from AppUser u where u.id = :userId", AppUser.class);
+        Query query = em.createQuery("select followers from AppUser u where u.id = :userId");
         query.setParameter("userId", loggedUser.getId());
-        Set<AppUser> users = query.getResultList().stream().filter(u -> u.isActive()).collect(Collectors.toSet());
-        return new HashSet<>(users);
+        ArrayList<AppUser> followers = new ArrayList<>(query.getResultList());
+        return followers.stream().filter(user -> user.isActive()).collect(Collectors.toCollection(HashSet::new));
     }
 
     @Override
@@ -88,7 +97,7 @@ public class MySQLUserDao extends AbstractMySQLDao implements AppUserDao {
         saveUser(loggedUser);
     }
 
-    private void unfollowBeforeDelete(AppUser user){
-        getFollowers(user).forEach(follower -> unfollow(follower,user));
+    private void unfollowBeforeDelete(AppUser user) {
+        getFollowers(user).forEach(follower -> unfollow(follower, user));
     }
 }
